@@ -1,0 +1,5 @@
+colour==0.1.5
+keyboardlayout==2.0.1
+pynput==1.8.1
+PyYAML==6.0.2
+six==1.17.0
