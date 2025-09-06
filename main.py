@@ -59,10 +59,10 @@ class KeyboardDisplay:
         
         total_diff = highest_count - lowest_count
         values_in_range = list(range(lowest_count, highest_count + 1))
-        color_gradient = self._compute_color_gradient(self._color_gr1, self._color_gr2, total_diff)
+        color_gradient = self._compute_color_gradient(self._color_gr1, self._color_gr2, total_diff + 1)
         
         for key_id, count in sorted_key_press_count:
-            idx = values_in_range.index(count) - 1
+            idx = values_in_range.index(count)
             color = color_gradient[idx].get_hex()
             
             try:
@@ -78,7 +78,7 @@ class KeyboardDisplay:
         )
         
     def _compute_color_gradient(self, color1: str, color2: str, length: int):
-        return list(Color(color1).range_to(Color(color2), length))
+        return list(Color(color2).range_to(Color(color1), length))
         
 
 class KeyboardTracker:
@@ -89,14 +89,9 @@ class KeyboardTracker:
         self._esc_count_to_end: int = 5  # Press 5 times the "esc" key to exit the program.
         self._esc_count: int = 0
         
-        self._time_tracking: float = 0.
-        
     def run(self):
-        ts = time.time()
         with keyboard.Listener(on_press=self._on_press, on_release=self._on_release) as listener:
             listener.join()
-        print("Hello!")
-        self._time_tracking = time.time() - ts
             
     def _on_press(self, key, _injected):
         if hasattr(key, "char"):
@@ -125,7 +120,6 @@ class KeyboardTracker:
         
     def _display_stats(self):
         print(f"TOTAL KEYS PRESSED: {self._total_count}")
-        print(f"TOTAL TIME TRACKING: {self._time_tracking:.2f}s")
         print("--------------")
         print("COUNT PER KEY (DESCENDING ORDER):")
         
@@ -140,8 +134,10 @@ class KeyboardTracker:
 
 if __name__ == '__main__':
     tracker = KeyboardTracker()
+    ts = time.time()
     tracker.run()
     print("=== FINISHED ===")
-    
+    tf = time.time() - ts
+    print(f"TOTAL TIME: {tf:.2f}")
     keyboard_display = KeyboardDisplay()
     keyboard_display.display(tracker.key_count)
